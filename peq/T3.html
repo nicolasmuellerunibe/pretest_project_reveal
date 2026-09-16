@@ -1,0 +1,31 @@
+{% extends "global/Page.html" %}
+{% load otree static %}
+
+{% block content %}
+Please recall the third training you took:<br>
+<img src="{{ static 'training/training3.png' }}"
+     style="width: 100%; height: auto; border: 2px solid black;" />
+
+<br><br>
+
+Indicate to what extent you agree or disagree with the following statements.
+<br><br>
+<table class="table">
+<tr><td></td> <td style="text-align: center">Strongly disagree</td> <td style="text-align: center">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td style="text-align: center">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td style="text-align: center">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td style="text-align: center">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td style="text-align: center">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td style="text-align: center">Strongly agree</td></tr>
+        {% for field in form %}
+
+        <tr>
+            <th>{{ field.label }}</th>
+            {% for choice in field %}
+                <td align="center" valign="middle">{{ choice }}</td>
+            {% endfor %}
+        </tr>
+
+        {% endfor %}
+</table>
+<br>
+
+<br><br>
+    {% next_button %}
+
+{% endblock %}

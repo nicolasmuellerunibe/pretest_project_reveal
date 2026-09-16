@@ -1,0 +1,39 @@
+{% extends "global/Page.html" %}
+{% load otree static %}
+
+{% block content %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'global_style.css' %}">
+
+<h3>Final Performance Overview of all Periods</h3>
+
+<p>Here you can see a summary of your performance of all periods in this experiment:</p>
+
+<table border="1" style="width: 40%; text-align: center; margin-top: 20px;">
+    <thead>
+        <tr style="background-color: #f0f0f0;">
+            <th>Period</th>
+            <th>Performance</th>
+        </tr>
+    </thead>
+    <tbody>
+    {# list all the periods#}
+    {% for row in period_data %}
+        <tr>
+            <td>Period {{ row.period_num }}</td>
+            <td>{{ row.net_perf }}</td>
+        </tr>
+    {% endfor %}
+    
+
+        <tr style="background-color: #f0f0f0; font-weight: bold;">
+            <td>Total</td>
+            <td>{{ total_score }}</td>
+        </tr>
+    </tbody>
+</table>
+
+<hr>
+
+<button class="otree-btn-next">Continue</button>
+{% endblock %}

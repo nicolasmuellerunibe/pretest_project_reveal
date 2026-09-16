@@ -1,0 +1,66 @@
+{% extends "global/Page.html" %}
+{% load otree static %}
+
+{% block content %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'global_style.css' %}">
+
+<h3>Performance Review – Period {{ period_num }}</h3>
+
+<p>Here, you can see a detailed review of your performance in <strong>Period {{ period_num }}</strong>:</p>
+
+<table border="1" style="width: 100%; text-align: center;">
+    <thead>
+        <tr>
+            <th>Round</th>
+            <th>Realized Value of selected Project</th>
+            <th>Number of Reveals </th>
+            <th>Number of Revisits </th>
+
+            {# show penalty column only if needed #}
+            {% if show_refresh_penalty_column %}
+            <th>Refresh Penalty </th>
+            {% endif %}
+
+            <th>Period Performance</th>
+        </tr>
+    </thead>
+    <tbody>
+    {# data for each round #}
+    {% for row in table_rows %}
+        <tr>
+            <td>{{ row.round }}</td>
+            <td>{{ row.value }}</td>
+            <td>{{ row.reveals }}</td>
+            <td>{{ row.num_revisits }}</td>
+
+            {# show cells only if the column is needed #}
+            {% if show_refresh_penalty_column %}
+            {# value for refresh penalty #}
+            <td>{{ row.refresh_penalty }}</td>
+            {% endif %}
+
+            <td>{{ row.net_perf }}</td>
+        </tr>
+    {% endfor %}
+
+    {# line for total net performance #}
+    <tr style="font-weight: bold; background-color: #bfb4b4;">
+
+        <td colspan="4" style="text-align: right; padding-right: 10px;">Total Period Performance:</td>
+
+        {# space holder for dynamic column (penalties)#}
+        {% if show_refresh_penalty_column %}
+        <td colspan="1"></td>
+        {% endif %}
+
+        <td>{{ period_net_perf }}</td>
+    </tr>
+    </tbody>
+</table>
+
+<hr>
+
+
+<button class="otree-btn-next">Continue</button>
+{% endblock %}

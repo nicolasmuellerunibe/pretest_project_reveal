@@ -1,0 +1,35 @@
+<h3>Employee's Task (1)</h3>
+<body><br>
+
+Every period consists of six rounds, as we will explain in more detail below. <br><br>
+
+In each round of each period, every employee performs a <b>decision-making task</b> individually.<br><br>
+
+The decision-making task will be the same in every round. It requires participants to choose <b>one project from five project alternatives.</b><br><br>
+
+Every project has an <i><u>Expected</u> Project Value </i> and a <i><u>Realized</u> Project Value</i>. <br><br>
+
+As we will explain in more detail below, the value of a project is determined by four attributes (A1, A2, A3 and A4). Each attribute has an <i>Attribute Weight</i> representing the importance of this attribute. And each project has <i>an Attribute Value</i> for each attribute.<BR><BR>
+
+<img
+    src="{% static 'example/click11.JPG' %}"
+    style="border: 2px solid black; max-width: 100%; width: 600px; height: auto;"
+/>
+
+<br><br>
+<h4>Expected Project Value</h4>
+The <i>Expected Project Value </i> of every project is determined as follows: <br><br>
+<i> Expected Project Value = Weight<sub>A1</sub> * A1 + Weight<sub>A2</sub> * A2 + Weight<sub>A3</sub> * A3 + Weight<sub>A4</sub> * A4 </i> <br><br>
+
+That means, the <i>Expected Project Value</i> of every project is determined by multiplying the <i>Attribute Values </i>(A1 to A4) with their respective <i>Attribute Weights</i> (Weight<sub>A1</sub> to Weight<sub>A4</sub>). <br><br>
+
+<h4>Realized Project Value</h4>
+
+However, like in practice, the <i>Realized Project Value</i> does not necessarily equal the <i>Expected Project Value</i> because uncertainty can affect the realized outcome of a project. Specifically, the <i>Realized Project Value</i> is equal to the <i>Expected Project Value</i> plus a <i>Noise Term</i>.
+<br><br>
+<i>Realized Project Value = Expected Project Value + Noise Term</i>
+
+<br><br>More information on the <i>Noise Term</i> will be provided later in the instructions.
+
+<br> <br>
+</body>

@@ -1,0 +1,463 @@
+{% extends "global/Page.html" %}
+{% load otree static %}
+
+{% block content %}
+<h3>Period {{ period_num }} - Round {{ round_in_period }} out of 6 </h3>
+{% load static %}
+<link rel="stylesheet" href="{% static 'global_style.css' %}">
+
+<table border="1">
+<tr>
+<th>Project</th>
+<th>A1</th>
+<th>A2</th>
+<th>A3</th>
+<th>A4</th>
+<th>EV Revealed</th>
+<th>Reveal Costs</th>
+</tr>
+{% for opt in options %}
+<tr>
+<td>{{ opt.name }}</td>
+<td><button type="button" onclick="reveal(this, {{ opt.fields.0 }}, {{ opt.ev_weights.0 }}, {{ forloop.counter0 }}, 0)">Reveal</button></td>
+<td><button type="button" onclick="reveal(this, {{ opt.fields.1 }}, {{ opt.ev_weights.1 }}, {{ forloop.counter0 }}, 1)">Reveal</button></td>
+<td><button type="button" onclick="reveal(this, {{ opt.fields.2 }}, {{ opt.ev_weights.2 }}, {{ forloop.counter0 }}, 2)">Reveal</button></td>
+<td><button type="button" onclick="reveal(this, {{ opt.fields.3 }}, {{ opt.ev_weights.3 }}, {{ forloop.counter0 }}, 3)">Reveal</button></td>
+<td class="ev_revealed">-</td>
+<td class="reveal_costs">-</td>
+</tr>
+{% endfor %}
+</table>
+
+<h4>Make your choice:</h4>
+<select id="choiceDropdown" onchange="enableChoiceButton()">
+<option value="">-- Select Project --</option>
+{% for opt in options %}
+<option value="{{ opt.Opt }}">{{ opt.name }}</option>
+{% endfor %}
+</select>
+<button id="selectChoiceBtn" onclick="selectChoice()" disabled>Confirm Choice</button>
+
+<input type="hidden" id="id_selected_option" name="selected_option">
+<input type="hidden" id="id_revisit_cost" name="revisit_cost">
+
+<input type="hidden" id="id_revealed_fields" name="revealed_fields" value="[]">
+<input type="hidden" id="id_num_revealed_fields" name="num_revealed_fields" value="0">
+
+<input type="hidden" id="id_revisited_trainings" name="revisited_trainings" value="[]">
+
+<input type="hidden" name="refresh_penalty" id="id_refresh_penalty" value="0">
+
+<p id="valueOfChoice" style="margin-top:10px;"></p>
+<p id="numberOfReveals"></p>
+<p id="totalCost"></p> <p id="netPerformance"></p> <p id="finalNetPerformance"></p> <div id="otree_next_button_container" style="display:none; margin-top:10px;">
+    {{ next_button }}
+</div>
+
+{% if training_done_status.1 or training_done_status.2 or training_done_status.3 %}
+<hr>
+<h5>Revisit Training (Cost: 100 performance points per training):</h5>
+<div id="training_links"></div>
+{% endif %}
+<div id="trainingModal" class="modal">
+  <div class="modal-content">
+    <span class="close-btn" onclick="closeModal()">&times;</span>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<script>
+let revealCost = {{ reveal_cost }};
+
+const playerCode = "{{ player_code }}";
+let optionsData = [
+{% for opt in options %}
+{
+'fields':[{{ opt.fields.0 }}, {{ opt.fields.1 }}, {{ opt.fields.2 }}, {{ opt.fields.3 }}],
+'ev_weights':[{{ opt.ev_weights.0 }}, {{ opt.ev_weights.1 }}, {{ opt.ev_weights.2 }}, {{ opt.ev_weights.3 }}],
+'revealed':[0,0,0,0],
+'ev_revealed':0,
+'true_value':{{ opt.true_value }}
+},
+{% endfor %}
+];
+
+let trainingData = {{ training_data|json }};
+let trainingDoneStatus = {{ training_done_status|json }};
+let modalOptionsData = [];
+const REVISIT_COST_PER_TRAINING = 100;
+let totalRevisitCost = 0;
+
+function reveal(btn, value, weight, optionIndex, fieldIndex){
+    btn.innerHTML = value;
+    btn.disabled = true;
+
+    optionsData[optionIndex].revealed[fieldIndex] = 1;
+
+    // Hidden json update
+    let data = JSON.parse(document.getElementById('id_revealed_fields').value);
+
+    while(data.length <= optionIndex){
+        data.push({Opt: optionIndex + 1, clicked_fields: []});
+    }
+
+    if(!data[optionIndex].clicked_fields.includes(fieldIndex)){
+        data[optionIndex].clicked_fields.push(fieldIndex);
+    }
+
+    document.getElementById('id_revealed_fields').value = JSON.stringify(
+    optionsData.map((opt, idx) => ({
+        Opt: idx + 1,
+        clicked_fields: opt.revealed
+            .map((flag, i) => flag === 1 ? i + 1 : null)
+            .filter(x => x !== null)
+    }))
+);
+
+    // update number of reveals
+    let numReveals = optionsData.reduce(
+        (sum,opt)=> sum + opt.revealed.reduce((a,b)=>a+b,0),
+        0
+    );
+    document.getElementById('id_num_revealed_fields').value = numReveals;
+
+    // EV
+    optionsData[optionIndex].ev_revealed = 0;
+    for(let i=0;i<4;i++){
+        if(optionsData[optionIndex].revealed[i] === 1){
+            optionsData[optionIndex].ev_revealed += optionsData[optionIndex].fields[i]*optionsData[optionIndex].ev_weights[i];
+        }
+    }
+
+    // update table
+    let row = btn.parentElement.parentElement;
+    row.querySelector(".ev_revealed").innerHTML = optionsData[optionIndex].ev_revealed.toFixed(2);
+
+    // show reveal costs in column
+    let optionReveals = optionsData[optionIndex].revealed.reduce((a,b)=>a+b,0);
+    row.querySelector(".reveal_costs").innerHTML = (optionReveals * revealCost).toFixed(2);
+}
+
+
+
+function enableChoiceButton(){
+    document.getElementById('selectChoiceBtn').disabled = document.getElementById('choiceDropdown').value === "";
+}
+
+function selectChoice(){
+    let dropdown = document.getElementById('choiceDropdown');
+    let selectedOpt = parseInt(dropdown.value); // 1–4
+    let selectedIndex = selectedOpt - 1;
+    let value = optionsData[selectedIndex].true_value;
+
+    // number of reveals
+    let totalReveals = optionsData.reduce(
+        (sum,opt)=>sum + opt.revealed.reduce((a,b)=>a+b,0),
+        0
+    );
+    let initialTotalCost = totalReveals * revealCost;
+
+    // include refresh penalty in total costs
+    let refreshPenalty = parseFloat(document.getElementById('id_refresh_penalty').value || 0);
+
+    let totalCost = initialTotalCost + totalRevisitCost + refreshPenalty;
+    let netPerf = value - totalCost;
+
+    // display
+    document.getElementById('valueOfChoice').innerHTML = "<strong>Realized Project Value </strong>"+value.toFixed(2);
+    document.getElementById('numberOfReveals').innerHTML = "<strong>Number of Reveals: </strong>"+totalReveals;
+
+    // separate reveal costs and revisit costs
+    document.getElementById('totalCost').innerHTML = "<strong>Total Reveal Costs: </strong>"+initialTotalCost.toFixed(2);
+    document.getElementById('netPerformance').innerHTML = "<strong>Total Revisit Costs: </strong>"+totalRevisitCost.toFixed(2);
+
+    // OPTIONAL: Show that refresh penalty is deducted from net performance
+    let penaltyDisplay = refreshPenalty > 0 ? ` (Deduction due to Refresh Penalty: ${refreshPenalty.toFixed(2)})` : '';
+    document.getElementById('finalNetPerformance').innerHTML = "<strong>Net Performance (Realized Project Value - Total Reveal Costs - Total Revisit Costs): </strong>"+netPerf.toFixed(2) + penaltyDisplay;
+
+
+    // Disable UI
+    dropdown.disabled = true;
+    document.getElementById('selectChoiceBtn').disabled = true;
+    document.querySelectorAll('table button').forEach(b=>b.disabled=true);
+    let links = document.getElementById('training_links');
+    if (links) {
+        links.style.display = 'none';
+    }
+
+    // set hidden fields
+    document.getElementById('id_selected_option').value = selectedOpt;
+    document.getElementById('id_revisit_cost').value = totalRevisitCost.toFixed(2);
+    document.getElementById('id_num_revealed_fields').value = totalReveals;
+
+    // update revealed fields for database
+    document.getElementById('id_revealed_fields').value = JSON.stringify(
+        optionsData.map((opt, idx) => ({
+            Opt: idx + 1,
+            clicked_fields: opt.revealed
+                .map((flag, i) => flag === 1 ? i + 1: null)
+                .filter(x => x !== null)
+        }))
+    );
+
+    // show next button
+    document.getElementById('otree_next_button_container').style.display = 'block';
+}
+
+
+
+// Training Modal
+function revealModal(btn,value,weight,optionIndex,fieldIndex){
+    btn.innerHTML = value;
+    btn.disabled = true;
+    modalOptionsData[optionIndex].revealed[fieldIndex]=1;
+    let ev = 0;
+    for(let i=0;i<4;i++){
+        if(modalOptionsData[optionIndex].revealed[i]===1){
+            ev+=modalOptionsData[optionIndex].fields[i]*modalOptionsData[optionIndex].ev_weights[i];
+        }
+    }
+    modalOptionsData[optionIndex].ev_revealed = ev;
+    let modalTable=document.querySelector("#trainingModal table");
+    if(modalTable){
+        let row=modalTable.rows[optionIndex+1];
+        if(row) row.querySelector(".modal-ev-revealed").innerHTML=ev.toFixed(2);
+    }
+}
+
+function checkModalAnswer(selectedValue, correctAnswer){
+    const feedback=document.getElementById("modal-feedback");
+    if(selectedValue===correctAnswer){
+        feedback.innerHTML="✅ Correct! You remembered the rule.";
+        feedback.style.color="darkgreen";
+    }else{
+        feedback.innerHTML="❌ Incorrect. Try revealing more attributes to find the correct answer.";
+        feedback.style.color="darkred";
+    }
+}
+
+function generateTrainingContent(trainingNum, data, weights, rule){
+    let content='';
+
+    if(trainingNum===1){
+        content = `
+        <h3>Training 1 – Understanding Attribute Weights</h3>
+
+        <p style="margin-top: 20px;"><strong>Rule:</strong> In every period, one of the attributes has a weight of 40 and is the most important attribute to determine the total value of the project.
+        Since revealing an attribute has equal costs independent of its weight, always start with the attribute that has the highest weight as it gives you the most valuable information.</p>
+
+        <p><strong>Example:</strong></p>
+        <ul>
+            <li>A1 = 40</li>
+            <li>A2 = 30</li>
+            <li>A3 = 20</li>
+            <li>A4 = 10</li>
+        </ul>
+        <ul>
+            <li>Knowing that reveal cost is the same for each attribute:</li>
+            <ul>
+                <li>Revealing A1 gives information that accounts for two-fifths of the total score.</li>
+                <li>Revealing A3 accounts for only one-fifth of the total score.</li>
+                <li>Both cost 50 points, but A1 is far more valuable to reveal.</li>
+            </ul>
+        </ul>
+
+        <p><strong>Exercise:</strong> You can reveal all attributes for free in the following exercise. Focus on finding out which attribute has an attribute weight of 40.</p>
+        `;
+    }
+
+    else if(trainingNum===2){
+        content = `
+        <h3>Training 2 – Inferring Attribute Connections</h3>
+
+        <p style="margin-top: 20px;"><strong>Rule:</strong> For each project, attribute values for A1 and A3 are always connected by a basic arithmetic operation (+, -, * or ÷). This operation remains the same for all rounds of a given period.
+        So don’t pay twice for the same information for each project.</p>
+
+        <p><strong>Example:</strong></p>
+        <ul>
+            <li>Imagine you reveal A1 for project 1 and see it is 9 in a round.</li>
+            <li>You then reveal A3 for the same project (Project 1) and see 3.</li>
+            <li>It could then be that A3 = A1 – 6 or A3 = A1 ÷ 3.</li>
+            <li>When you then reveal A1 and A3 for project 2 and you find 6 for A1 and 2 for A3, you know that the connection for this period is that A3 = A1 ÷ 3.</li>
+            <li>That means, from revealing A1, you can also infer the value of A3 (and vice versa). So, don’t pay twice for information you can infer from the rule.</li>
+        </ul>
+
+        <p><strong>Exercise:</strong> You can reveal all attributes for free in the following exercise. Focus on finding out the connection between attribute values A1 and A3.</p>
+        `;
+    }
+
+    else if(trainingNum===3){
+        content = `
+        <h3>Training 3 – Inferring Attribute Connections for A2</h3>
+
+        <p style="margin-top: 20px;"><strong>Rule:</strong> Between the five projects of a given round, attribute values for A2 are always connected by a basic arithmetic operation (+ or -). These operations remain the same for all rounds of a given period.
+        So don’t pay twice for the same information for A2 of different options.</p>
+
+        <p><strong>Example:</strong></p>
+        <ul>
+            <li>Imagine you reveal attribute A2 of all five projects and see the following:</li>
+            <ul>
+                <li>A2 for Project 1 = 5</li>
+                <li>A2 for Project 2 = 2</li>
+                <li>A2 for Project 3 = 6</li>
+                <li>A2 for Project 4 = 9</li>
+                <li>A2 for Project 5 = 1</li>
+            </ul>
+
+            <li style="margin-top: 10px;">You then know that the rule for this period is:</li>
+            <ul>
+                <li>A2 (Project 2) = A2 (Project 1) – 3</li>
+                <li>A2 (Project 3) = A2 (Project 2) + 4</li>
+                <li>A2 (Project 4) = A2 (Project 3) + 3</li>
+                <li>A2 (Project 5) = A2 (Project 4) - 8</li>
+            </ul>
+
+            <li style="margin-top: 10px;">Thus, for every round of a given period, you only need to reveal one A2 to infer the others. So don’t pay twice for information you can infer from the rule.</li>
+        </ul>
+
+        <p><strong>Exercise:</strong> You can reveal all attributes for free in the following exercise. Focus on finding out the connection between the A2 values of all five projects.</p>
+        `;
+    }
+
+    // Exercise table
+    modalOptionsData = data.map(opt => ({
+        fields: [opt.A1, opt.A2, opt.A3, opt.A4],
+        ev_weights: [weights.A1, weights.A2, weights.A3, weights.A4],
+        revealed: [0,0,0,0],
+        ev_revealed: 0
+    }));
+
+    let tableHtml = `<table border="1" style="border-collapse: collapse; width:100%; text-align:center;">
+        <tr>
+            <th>Project</th>
+            <th>A1</th>
+            <th>A2</th>
+            <th>A3</th>
+            <th>A4</th>
+            <th>EV Revealed</th>
+        </tr>`;
+
+    data.forEach((opt,optIndex)=>{
+        tableHtml+=`<tr>
+        <td>Project ${opt.Opt}</td>
+        <td><button class="modal-reveal-btn" type="button" onclick="revealModal(this,${opt.A1},${weights.A1},${optIndex},0)">Reveal</button></td>
+        <td><button class="modal-reveal-btn" type="button" onclick="revealModal(this,${opt.A2},${weights.A2},${optIndex},1)">Reveal</button></td>
+        <td><button class="modal-reveal-btn" type="button" onclick="revealModal(this,${opt.A3},${weights.A3},${optIndex},2)">Reveal</button></td>
+        <td><button class="modal-reveal-btn" type="button" onclick="revealModal(this,${opt.A4},${weights.A4},${optIndex},3)">Reveal</button></td>
+        <td class="modal-ev-revealed">-</td>
+        </tr>`;
+    });
+
+    tableHtml += "</table>";
+
+    // Answer options
+    let answerHtml = `<p style="margin-top:25px;">`;
+    let formHtml = `<form>`;
+
+    if(trainingNum===1){
+        answerHtml += "Which attribute has the highest attribute weight / an attribute weight of 40?";
+
+        formHtml += `<label><input type="radio" name="answer" value="A1" onchange="checkModalAnswer(this.value,'${rule}')"> Attribute A1</label><br>
+        <label><input type="radio" name="answer" value="A2" onchange="checkModalAnswer(this.value,'${rule}')"> Attribute A2</label><br>
+        <label><input type="radio" name="answer" value="A3" onchange="checkModalAnswer(this.value,'${rule}')"> Attribute A3</label><BR>
+        <label><input type="radio" name="answer" value="A4" onchange="checkModalAnswer(this.value,'${rule}')"> Attribute A4</label>`;
+    }
+
+    else if(trainingNum===2){
+        answerHtml += "How are attribute values A1 and A3 connected?";
+
+        formHtml += `<label><input type="radio" name="answer" value="A1*2" onchange="checkModalAnswer(this.value,'${rule}')"> Attribute A3 = Attribute A1 * 2</label><br>
+        <label><input type="radio" name="answer" value="A1*5" onchange="checkModalAnswer(this.value,'${rule}')"> Attribute A3 = Attribute A1 * 5</label><br>
+        <label><input type="radio" name="answer" value="A1+4" onchange="checkModalAnswer(this.value,'${rule}')"> Attribute A3 = Attribute A1 + 4</label>`;
+    }
+
+    else if(trainingNum===3){
+        answerHtml += "How is the connection between the attribute values A2 of all five options?";
+
+        formHtml += `<label><input type="radio" name="answer" value="opt1" onchange="checkModalAnswer(this.value,'${rule}')">
+            A2 (Project 2) = A2 (Project 1) +3 <strong>/</strong> A2 (Project 3) = A2 (Project 2) +4 <strong>/</strong> A2 (Project 4) = A2 (Project 3) – 1 <strong>/</strong> A2 (Project 5) = A2 (Project 4) - 7</label><br>
+        <label><input type="radio" name="answer" value="opt2" onchange="checkModalAnswer(this.value,'${rule}')">
+            A2 (Project 2) = A2 (Project 1) + 2 <strong>/</strong> A2 (Project 3) = A2 (Project 2) + 5 <strong>/</strong> A2 (Project 4) = A2 (Project 3) - 1 <strong>/</strong> A2 (Project 5) = A2 (Project 4) - 7</label><br>
+        <label><input type="radio" name="answer" value="opt3" onchange="checkModalAnswer(this.value,'${rule}')">
+            A2 (Project 2) = A2 (Project 1) + 3 <strong>/</strong> A2 (Project 3) = A2 (Project 2) + 2 <strong>/</strong> A2 (Project 4) = A2 (Project 3) + 1 <strong>/</strong> A2 (Project 5) = A2 (Project 4) - 7</label>`;
+    }
+
+    answerHtml += "</p>";
+    formHtml += "</form>";
+
+    return content + tableHtml + answerHtml + formHtml +
+        '<p id="modal-feedback" style="margin-top:15px; font-weight:bold;"></p>';
+}
+
+
+function openTrainingModal(trainingNum){
+    const data=trainingData[trainingNum];
+    const content=generateTrainingContent(trainingNum,data.data,data.weights,data.correct_answer);
+    document.getElementById('modal-body').innerHTML=content;
+    document.getElementById('trainingModal').style.display='block';
+    totalRevisitCost+=REVISIT_COST_PER_TRAINING;
+    let revisitedField = document.getElementById('id_revisited_trainings');
+    let revisitedList = [];
+    if(revisitedField.value){
+        revisitedList = JSON.parse(revisitedField.value);
+    }
+    if(!revisitedList.includes(trainingNum)){
+        revisitedList.push(trainingNum);
+    }
+    revisitedField.value = JSON.stringify(revisitedList);
+}
+
+function closeModal(){document.getElementById('trainingModal').style.display='none';}
+
+// --- reset flags that punish refreshes, if the refresh is caused by the "next" button
+function clearRefreshFlag(event) {
+    const REFRESH_STORAGE_KEY = 'pageRefreshed_R' + js_vars.round_number + '_' + playerCode;
+
+    // delete the flag when entering the next page
+    sessionStorage.removeItem(REFRESH_STORAGE_KEY);
+    return true;
+}
+
+
+window.onload = function() {
+    enableChoiceButton();
+    const linksContainer = document.getElementById('training_links');
+
+    // Add this IF statement to wrap the button creation
+    if (linksContainer) {
+        linksContainer.innerHTML = '';
+        if(trainingDoneStatus[1]) linksContainer.innerHTML += `<button type="button" class="otree-btn-next" style="background-color: #f3f3f3; margin-right: 10px; margin-bottom: 5px; text-decoration: underline;" onclick="openTrainingModal(1)">Training 1 (Weights)</button>`;
+        if(trainingDoneStatus[2]) linksContainer.innerHTML += `<button type="button" class="otree-btn-next" style="background-color: #f3f3f3; margin-right: 10px; margin-bottom: 5px; text-decoration: underline;" onclick="openTrainingModal(2)">Training 2 (A1-A3 Connection)</button>`;
+        if(trainingDoneStatus[3]) linksContainer.innerHTML += `<button type="button" class="otree-btn-next" style="background-color: #f3f3f3; margin-right: 10px; margin-bottom: 5px; text-decoration: underline;" onclick="openTrainingModal(3)">Training 3 (A2 Connection)</button>`;
+    }
+    // check if page is refreshed
+    const REFRESH_COSTS = 1000;
+    const REFRESH_STORAGE_KEY = 'pageRefreshed_R' + js_vars.round_number + '_' + playerCode;
+    const penaltyField = document.getElementById('id_refresh_penalty');
+
+    const isRefreshed = sessionStorage.getItem(REFRESH_STORAGE_KEY);
+
+    if (isRefreshed) {
+        // case 1: notice a refresh:
+        if (penaltyField) {
+            penaltyField.value = REFRESH_COSTS;
+            alert(`Warning: The page was manually refreshed. In this round, ${REFRESH_COSTS} points are deducted from your net performance as a penalty.`);
+        }
+
+    } else {
+        // Case: First loading of page (no flags yet)
+        sessionStorage.setItem(REFRESH_STORAGE_KEY, 'true');
+        if (penaltyField) {
+            penaltyField.value = 0;
+        }
+    }
+
+
+    // Delete flag after continuing to the next round
+    const oTreeForm = document.querySelector('form');
+    if (oTreeForm) {
+        oTreeForm.addEventListener('submit', clearRefreshFlag);
+    }
+}
+</script>
+{% endblock %}

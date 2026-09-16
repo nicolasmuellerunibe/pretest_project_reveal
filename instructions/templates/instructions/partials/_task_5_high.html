@@ -1,0 +1,27 @@
+<h3>Employee's Task (5)</h3>
+<body><br>
+
+<h4>Example (continued)</h4>
+After an employee has revealed all <i>Attribute Values</I> they want to reveal, they can select a project.
+<br><br>
+Imagine that based on only revealing A2 for Project 3, the employee would like to select Project 3, then they can enter this choice at the bottom of the page.
+<br><br>
+<img
+    src="{% static 'example/click31new.JPG' %}"
+    style="border: 2px solid black; max-width: 100%; width: 600px; height: auto;"
+/>
+<br><br>
+<h4>Realized Project Value</h4>
+
+After an employee has chosen a project, the <I><u>Realized</u> Project Value</I> is determined. The <I>Realized Project Value</I> equals the total <I><U>Expected</U> Project Value</I> plus a <I>Noise Term</I> that is randomly determined by the program.
+<br><br>
+<I>Realized Project Value = Expected Project Value + Noise Term</I>
+<br><br>
+As we explained above, like in the real world, the realized value of a project does not necessarily correspond to the <i>Expected Project Value</i> but is also influenced by uncertainty, because unexpected changes in the environment can increase or decrease the realized value of a project. This also means that even if all <i>Attribute Values</i> of a project are revealed and, thus the <i>EV Revealed</i> corresponds to the <i>Expected Project Value</i>, the <i>Realized Project Value</i> can still deviate.
+<br><br>
+
+The <i>Noise Term</i> varies between [-150; +150] points. That means, in every period, it can range between -150 and +150 points. The <i>Noise Term</i> is determined separately and randomly for every project and every period. That means, the noise term for a specific project in a specific period does not depend on the noise term for other projects or in earlier or later periods.<br><br>
+
+The <i>Realized Project Value</i> is important because it is a key determinant of an employee's performance in each round, as we will explain on the next screens.
+<br> <br>
+</body>

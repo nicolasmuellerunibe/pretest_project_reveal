@@ -1,0 +1,42 @@
+{% extends "global/Page.html" %}
+{% load otree static %}
+
+{% block content %}
+<b>Questionnaire</b> <br><br>
+In this section, we are interested in understanding your thoughts during the decision-making task.
+<br><br>
+Please indicate to what extent you agree or disagree with the following statements.
+<br><br>
+<b>To what extent was your performance determined by...</b>
+
+<table class="table">
+<tr><td></td> <td style="text-align: center">Not at all</td> <td style="text-align: center">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td> <td style="text-align: center">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td style="text-align: center">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td style="text-align: center">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td style="text-align: center">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td style="text-align: center">Very much</td></tr>
+        {% for field in form %}
+        {% if  forloop.counter < 5 %}
+        <tr>
+            <th>{{ field.label }}</th>
+            {% for choice in field %}
+                <td align="center" valign="middle">{{ choice }}</td>
+            {% endfor %}
+        </tr>
+        {% endif %}
+        {% endfor %}
+</table>
+<br>
+<table class="table">
+<tr><td></td>  <td style="text-align: center">Strongly disagree</td> <td style="text-align: center">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td style="text-align: center">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td style="text-align: center">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td style="text-align: center">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td style="text-align: center">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td style="text-align: center">Strongly Agree</td></tr>        {% for field in form %}
+        {% if  forloop.counter > 4 %}
+        <tr>
+            <th>{{ field.label }}</th>
+            {% for choice in field %}
+                <td align="center" valign="middle">{{ choice }}</td>
+            {% endfor %}
+        </tr>
+        {% endif %}
+        {% endfor %}
+</table>
+
+<br><br>
+    {% next_button %}
+
+{% endblock %}

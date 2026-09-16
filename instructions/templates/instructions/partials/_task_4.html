@@ -1,0 +1,33 @@
+<h3>Employee's Task (4)</h3>
+<body><br>
+
+<h4>Reveal Cost</h4>
+
+However, revealing <i>Attribute Values</i> is costly for employees. Specifically, every time an employee reveals an <i>Attribute Value</i>, the employee incurs additional costs of 50 points. That means, revealing more <i>Attribute Values</i> also leads to more <i>Reveal Costs</i>. Once an employee has revealed an <i>Attribute Value</i>, this can no longer be reversed.
+<br><br>
+
+
+<h4>Example (continued)</h4>
+After revealing A2 of Project 3, an employee learns that this <i>Attribute Value</i> equals 3, resulting in an <i>Expected Project Value (“EV Revealed”)</i> of 90. The <i>Expected Project Value</i> per project will automatically update, taking into account the revealed <i>Attribute Value</i>.
+<br><br>
+Please note that the <b>revealed</b> <i>Expected Project Value (EV Revealed)</i> is calculated solely from the <b>revealed</b> <i>Attribute Values</i>. As we explained above, the more <i>Attribute Values</i> of a project are revealed, the closer this project’s <i>EV Revealed</i> will be to the <i>Expected Project Value</i> of this project.
+<br><br>
+Recall that the <i>Realized Project Value</i> is equal to the <i>Expected Project Value</i> (that is based on all four <i>Attribute Values</i>) plus a <i>Noise Term</i>.
+<br><br>
+The <i>Reveal Cost</i> also updates each time a new <i>Attribute Value</i> is revealed.
+<br><br>
+
+<img
+    src="{% static 'example/click21new.JPG' %}"
+    style="border: 2px solid black; max-width: 100%; width: 600px; height: auto;"
+/>
+
+<br><br>
+Employees can then reveal additional <i>Attribute Values</i> of the same or other projects. Every time, the corresponding <I>Expected Project Value (EV Revealed)</I> will be updated as well as the <i>Reveal Cost</i>.
+<br><br>
+<h4>Refresh Penalty</h4>
+Please note: It is <b>not allowed</b> to refresh or reload the page at any point during the experiment. Refreshing the page will disrupt the experiment and data will not be recorded correctly. If an employee refreshes the page, they will receive a <b>penalty</b> for this round of <b>1000 points</b>.
+<br><br>
+Please note that refreshing the page is more expensive than revealing all attribute values for all projects in a round. If you think that the program is stuck and does not move on, please raise your hand and someone will assist you.
+<br> <br>
+</body>

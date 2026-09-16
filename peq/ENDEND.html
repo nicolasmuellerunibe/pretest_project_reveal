@@ -1,0 +1,29 @@
+{% extends "global/Page.html" %}
+{% load staticfiles otree %}
+
+{% block title %}
+    <h3> End of the study </h3>
+{% endblock %}
+
+
+{% block content %}
+<BR>
+You finished the experiment.<br><br>
+
+<br> Thank you for your participation. <b>Your participation code is:<big> {{participant.code}} </big></b> <br><br>
+
+Make sure that you remember your participation code. <br>
+It is best to <b>write the code down</b> on paper or save it on your computer.<br><br>
+
+<b>To claim your compensation</b>, click on the <b>link</b> below and enter your bank account details, your name and participation code.
+
+<br><br> <b><a href=https://forms.office.com/e/W6XLBHjP6L>Click Here</a> </b><br>
+<br>
+<i>After entering your name and participation code, you can close this window.</i>
+
+
+
+<br><br>
+{{next_button}}
+
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends "global/Page.html" %}
+{% load otree static %}
+
+{% block title %}
+    Final questions
+{% endblock %}
+
+
+{% block content %}
+In this final section, we ask you to fill in some questions on demographics.<br><br>
+
+    {% formfields %}
+
+{% next_button %}
+
+{% endblock %}

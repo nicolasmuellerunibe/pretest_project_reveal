@@ -1,0 +1,23 @@
+{% extends "global/Page.html" %}
+{% load otree static %}
+
+{% block content %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'global_style.css' %}">
+
+    <h3>Please wait and do not close this window.</h3>
+
+    <p>
+        You will shortly continue with the experiment.
+    </p>
+
+    <style>
+    /* Hide timer*/
+    #otree-timer,
+    .otree-timer,
+    .timer-text {
+        display: none !important;
+    }
+</style>
+
+{% endblock %}

@@ -1,0 +1,48 @@
+{% extends "global/Page.html" %}
+{% load otree static %}
+
+{% block title %}
+    <h3>Your Payout</h3>
+{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'global_style.css' %}">
+
+<p>The experiment is now complete. Below you can see how your final payout was calculated.</p>
+
+<table border="1" style="border-collapse: collapse; width: 40%; text-align: left; margin-top: 20px;">
+    <thead>
+        <tr style="background-color: #f0f0f0;">
+            <th style="padding: 8px 14px;">Component</th>
+            <th style="padding: 8px 14px;">Amount</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td style="padding: 8px 14px;">Total points earned</td>
+            <td style="padding: 8px 14px;">{{ total_points }} pts</td>
+        </tr>
+        <tr>
+            <td style="padding: 8px 14px;">Show-up fee</td>
+            <td style="padding: 8px 14px;">EUR 3.00</td>
+        </tr>
+        <tr>
+            <td style="padding: 8px 14px;">Performance bonus<br><small>(EUR 1 per 3,000 points)</small></td>
+            <td style="padding: 8px 14px;">EUR {{ bonus_pay }}</td>
+        </tr>
+        <tr style="background-color: #e8f5e9; font-weight: bold;">
+            <td style="padding: 8px 14px;">Total payout</td>
+            <td style="padding: 8px 14px;">EUR {{ payout }}</td>
+        </tr>
+    </tbody>
+</table>
+
+
+<p style="margin-top: 20px;">
+    Please <strong>note down your payout (EUR {{ payout }})</strong> and your participation code
+    on the next page.
+</p>
+
+{{ next_button }}
+
+{% endblock %}

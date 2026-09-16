@@ -1,0 +1,220 @@
+{% extends "global/Page.html" %}
+{% load otree static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'global_style.css' %}">
+
+<h3>Quiz Instructions</h3>
+<br>
+<p>Next, you will have to answer questions regarding the experimental instructions. It is important that you have understood the instructions well.</p>
+<p>With the <strong>Revisit Instructions</strong> button below, you can review the instructions again before starting the quiz.</p>
+<p>Once you are ready, click the <strong>"Next"</strong> button to proceed to the quiz.</p>
+<br>
+
+<button type="button" onclick="openInstructionsModal()"
+    style="background-color:#4a90d9; color:white; padding:10px 22px; font-size:15px;
+           border:none; border-radius:5px; cursor:pointer; margin-bottom:24px;">
+    Revisit Instructions
+</button>
+
+{{ next_button }}
+
+<!-- ═══════════════════════  MODAL  ═══════════════════════ -->
+<div id="instructionsModal"
+     style="display:none; position:fixed; top:0; left:0; width:100%; height:100%;
+            background:rgba(0,0,0,0.55); z-index:9999; overflow-y:auto;">
+  <div style="background:#fff; margin:30px auto 50px; padding:30px 34px;
+              max-width:880px; border-radius:8px; position:relative;
+              box-shadow:0 4px 24px rgba(0,0,0,0.3);">
+
+    <span onclick="closeInstructionsModal()"
+          style="position:absolute; top:12px; right:18px; font-size:28px;
+                 cursor:pointer; color:#666; line-height:1;">&times;</span>
+
+    <h3 style="margin-top:0;">Instructions – Overview</h3>
+    <p style="color:#666; font-size:13px; margin-bottom:18px;">
+      Click a chapter title to expand it.
+    </p>
+
+    <!-- ── Chapter 1: Overview ── -->
+    <div class="ch-wrap">
+      <div class="ch-head" onclick="toggleChapter(this)">
+        <span>1. Overview</span><span class="ch-arrow">▸</span>
+      </div>
+      <div class="ch-body">
+        {% include "instructions/partials/_overview.html" %}
+      </div>
+    </div>
+
+    <!-- ── Chapter 2: Task (1) ── -->
+    <div class="ch-wrap">
+      <div class="ch-head" onclick="toggleChapter(this)">
+        <span>2. Employee's Task (1) – Task & Project Values</span><span class="ch-arrow">▸</span>
+      </div>
+      <div class="ch-body">
+        {% include "instructions/partials/_task_1.html" %}
+      </div>
+    </div>
+
+    <!-- ── Chapter 3: Task (2) ── -->
+    <div class="ch-wrap">
+      <div class="ch-head" onclick="toggleChapter(this)">
+        <span>3. Employee's Task (2) – Attribute Values and Weights</span><span class="ch-arrow">▸</span>
+      </div>
+      <div class="ch-body">
+        {% include "instructions/partials/_task_2.html" %}
+      </div>
+    </div>
+
+    <!-- ── Chapter 4: Task (3) ── -->
+    <div class="ch-wrap">
+      <div class="ch-head" onclick="toggleChapter(this)">
+        <span>3. Employee's Task (3) – Revealing Attribute Values </span><span class="ch-arrow">▸</span>
+      </div>
+      <div class="ch-body">
+        {% include "instructions/partials/_task_3.html" %}
+      </div>
+    </div>
+
+    <!-- ── Chapter 4: Task (3) ── -->
+    <div class="ch-wrap">
+      <div class="ch-head" onclick="toggleChapter(this)">
+        <span>3. Employee's Task (4) – Reveal Costs </span><span class="ch-arrow">▸</span>
+      </div>
+      <div class="ch-body">
+        {% include "instructions/partials/_task_4.html" %}
+      </div>
+    </div>
+
+        <!-- ── Chapter 5 ── -->
+    <div class="ch-wrap">
+      <div class="ch-head" onclick="toggleChapter(this)">
+        <span>4. Employee's Task (5) – Realized Project Value</span><span class="ch-arrow">▸</span>
+      </div>
+      <div class="ch-body">
+        {% if player.participant.vars.noise == 'high' %}
+          {% include "instructions/partials/_task_5_high.html" %}
+        {% else %}
+          {% include "instructions/partials/_task_5_low.html" %}
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- ── Chapter 6: Trainings ── -->
+    <div class="ch-wrap">
+      <div class="ch-head" onclick="toggleChapter(this)">
+        <span>6. Employee's Trainings</span><span class="ch-arrow">▸</span>
+      </div>
+      <div class="ch-body">
+        {% include "instructions/partials/_employee_training.html" %}
+      </div>
+    </div>
+
+    <!-- ── Chapter 7: Net Performance ── -->
+    <div class="ch-wrap">
+      <div class="ch-head" onclick="toggleChapter(this)">
+        <span>7. Performance &amp; Compensation</span><span class="ch-arrow">▸</span>
+      </div>
+      <div class="ch-body">
+        {% include "instructions/partials/_net_performance.html" %}
+      </div>
+    </div>
+
+    <!-- ── Chapter 8: Feedback – treatment-conditional ── -->
+    <div class="ch-wrap">
+      <div class="ch-head" onclick="toggleChapter(this)">
+        <span>8. Employee Feedback</span><span class="ch-arrow">▸</span>
+      </div>
+      <div class="ch-body">
+        {% if player.participant.vars.noise == 'high' %}
+          {% include "instructions/partials/_employee_feedback_high.html" %}
+        {% else %}
+          {% include "instructions/partials/_employee_feedback_low.html" %}
+        {% endif %}
+      </div>
+    </div>
+
+    <div style="text-align:right; margin-top:24px;">
+      <button type="button" onclick="closeInstructionsModal()"
+        style="background:#4a90d9; color:white; padding:8px 20px;
+               border:none; border-radius:5px; cursor:pointer; font-size:14px;">
+        Close
+      </button>
+    </div>
+
+  </div><!-- /modal-content -->
+</div><!-- /modal -->
+
+<style>
+.ch-wrap {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-bottom: 8px;
+    overflow: hidden;
+}
+.ch-head {
+    background: #f0f4f8;
+    padding: 12px 16px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    user-select: none;
+}
+.ch-head:hover { background: #e2eaf3; }
+.ch-arrow {
+    font-size: 18px;
+    transition: transform 0.2s;
+    flex-shrink: 0;
+    margin-left: 10px;
+}
+.ch-body {
+    display: none;
+    padding: 16px 20px;
+    font-size: 14px;
+    line-height: 1.65;
+    background: #fff;
+}
+.ch-body h3 { margin-top: 0; }
+.ch-body img { max-width: 100%; height: auto; }
+</style>
+
+<script>
+function toggleChapter(headEl) {
+    const body = headEl.nextElementSibling;
+    const arrow = headEl.querySelector('.ch-arrow');
+    const isOpen = body.style.display === 'block';
+
+    // close all
+    document.querySelectorAll('.ch-body').forEach(b => b.style.display = 'none');
+    document.querySelectorAll('.ch-arrow').forEach(a => {
+        a.style.transform = '';
+        a.textContent = '▸';
+    });
+
+    // open clicked if it was closed
+    if (!isOpen) {
+        body.style.display = 'block';
+        arrow.style.transform = 'rotate(90deg)';
+    }
+}
+
+function openInstructionsModal() {
+    document.getElementById('instructionsModal').style.display = 'block';
+    document.body.style.overflow = 'hidden';
+}
+
+function closeInstructionsModal() {
+    document.getElementById('instructionsModal').style.display = 'none';
+    document.body.style.overflow = '';
+}
+
+// Close on backdrop click
+document.getElementById('instructionsModal').addEventListener('click', function(e) {
+    if (e.target === this) closeInstructionsModal();
+});
+</script>
+
+{% endblock %}

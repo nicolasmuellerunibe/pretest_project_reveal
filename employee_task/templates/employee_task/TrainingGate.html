@@ -1,0 +1,240 @@
+{% extends "global/Page.html" %}
+{% load otree static %}
+
+{% block content %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'global_style.css' %}">
+
+    {% if training_num == 1 %}
+        <h3>Training 1 – Understanding Attribute Weights</h3>
+
+        <p style="margin-top: 20px;"><strong>Rule:</strong> In every period, one of the attributes has a weight of 40 and is the most important attribute to determine the total value of the project.
+        Since revealing an attribute has equal costs independent of its weight, always start with the attribute that has the highest weight as it gives you the most valuable information.</p>
+
+        <p><strong>Example:</strong></p>
+        <ul>
+            <li>A1 = 40</li>
+            <li>A2 = 30</li>
+            <li>A3 = 20</li>
+            <li>A4 = 10</li>
+        </ul>
+        <ul>
+            <li>Knowing that reveal cost is the same for each attribute:</li>
+            <ul>
+                <li>Revealing A1 gives information that accounts for two-fifths of the total score.</li>
+                <li>Revealing A3 accounts for only one-fifth of the total score.</li>
+                <li>Both cost 50 points, but A1 is far more valuable to reveal.</li>
+            </ul>
+        </ul>
+
+        <p><strong>Exercise:</strong> You can reveal all attributes for free in the following exercise. Focus on finding out which attribute has an attribute weight of 40.</p>
+
+    {% elif training_num == 2 %}
+        <h3>Training 2 – Inferring Attribute Connections</h3>
+
+        <p style="margin-top: 20px;"><strong>Rule:</strong> For each project, attribute values for A1 and A3 are always connected by a basic arithmetic operation (+, -, * or ÷). This operation remains the same for all rounds of a given period.
+        So don’t pay twice for the same information for each project.</p>
+
+        <p><strong>Example:</strong></p>
+        <ul>
+            <li>Imagine you reveal A1 for project 1 and see it is 9 in a round.</li>
+            <li>You then reveal A3 for the same project (Project 1) and see 3.</li>
+            <li>It could then be that A3 = A1 – 6 or A3 = A1 ÷ 3.</li>
+            <li>When you then reveal A1 and A3 for project 2 and you find 6 for A1 and 2 for A3, you know that the connection for this period is that A3 = A1 ÷ 3.</li>
+            <li>That means, from revealing A1, you can also infer the value of A3 (and vice versa). So, don’t pay twice for information you can infer from the rule.</li>
+        </ul>
+
+        <p><strong>Exercise:</strong> You can reveal all attributes for free in the following exercise. Focus on finding out the connection between attribute values A1 and A3.</p>
+
+    {% elif training_num == 3 %}
+        <h3>Training 3 – Inferring Attribute Connections for A2</h3>
+
+        <p style="margin-top: 20px;"><strong>Rule:</strong> Between the five projects of a given round, attribute values for A2 are always connected by a basic arithmetic operation (+ or -). These operations remain the same for all rounds of a given period.
+        So don’t pay twice for the same information for A2 of different options.</p>
+
+        <p><strong>Example:</strong></p>
+        <ul>
+            <li>Imagine you reveal attribute A2 of all five projects and see the following:</li>
+            <ul>
+                <li>A2 for Project 1 = 5</li>
+                <li>A2 for Project 2 = 2</li>
+                <li>A2 for Project 3 = 6</li>
+                <li>A2 for Project 4 = 9</li>
+                <li>A2 for Project 5 = 1</li>
+            </ul>
+            <li style="margin-top: 10px;">You then know that the rule for this period is:</li>
+            <ul>
+                <li>A2 (Project 2) = A2 (Project 1) – 3</li>
+                <li>A2 (Project 3) = A2 (Project 2) + 4</li>
+                <li>A2 (Project 4) = A2 (Project 3) + 3</li>
+                <li>A2 (Project 5) = A2 (Project 4) - 8</li>
+            </ul>
+            <li style="margin-top: 10px;">Thus, for every round of a given period, you only need to reveal one A2 to infer the others. So don’t pay twice for information you can infer from the rule.</li>
+        </ul>
+
+        <p><strong>Exercise:</strong> You can reveal all attributes for free in the following exercise. Focus on finding out the connection between the A2 values of all five projects.</p>
+    {% endif %}
+
+
+    <table border="1" style="border-collapse: collapse; width: 100%; text-align: center;">
+        <tr>
+            <th>Project</th>
+            <th>A1</th>
+            <th>A2</th>
+            <th>A3</th>
+            <th>A4</th>
+            <th>EV Revealed</th>
+        </tr>
+        {% for opt in options %}
+        <tr>
+            <td>{{ opt.name }}</td>
+            <td><button class="reveal-btn" type="button"
+                onclick="reveal(this, {{ opt.fields.0 }}, {{ opt.ev_weights.0 }}, {{ forloop.counter0 }}, 0)">Reveal</button></td>
+            <td><button class="reveal-btn" type="button"
+                onclick="reveal(this, {{ opt.fields.1 }}, {{ opt.ev_weights.1 }}, {{ forloop.counter0 }}, 1)">Reveal</button></td>
+            <td><button class="reveal-btn" type="button"
+                onclick="reveal(this, {{ opt.fields.2 }}, {{ opt.ev_weights.2 }}, {{ forloop.counter0 }}, 2)">Reveal</button></td>
+            <td><button class="reveal-btn" type="button"
+                onclick="reveal(this, {{ opt.fields.3 }}, {{ opt.ev_weights.3 }}, {{ forloop.counter0 }}, 3)">Reveal</button></td>
+            <td class="ev_revealed">-</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <p style="margin-top: 25px;">
+        {% if training_num == 1 %}
+            Which attribute has the highest attribute weight / an attribute weight of 40?
+        {% elif training_num == 2 %}
+            How are attribute values A1 and A3 connected?
+        {% elif training_num == 3 %}
+            How is the connection between the attribute values A2 of all five options?
+        {% endif %}
+    </p>
+
+    <form>
+        {% if training_num == 1 %}
+            <label><input type="radio" name="answer" value="A1" onchange="checkAnswer(this.value)"> Attribute A1</label><br>
+            <label><input type="radio" name="answer" value="A2" onchange="checkAnswer(this.value)"> Attribute A2</label><br>
+            <label><input type="radio" name="answer" value="A3" onchange="checkAnswer(this.value)"> Attribute A3</label><BR>
+            <label><input type="radio" name="answer" value="A4" onchange="checkAnswer(this.value)"> Attribute A4</label>
+        {% elif training_num == 2 %}
+            <label><input type="radio" name="answer" value="A1*2" onchange="checkAnswer(this.value)"> Attribute A3 = Attribute A1 * 2</label><br>
+            <label><input type="radio" name="answer" value="A1*5" onchange="checkAnswer(this.value)"> Attribute A3 = Attribute A1 * 5</label><br>
+            <label><input type="radio" name="answer" value="A1+4" onchange="checkAnswer(this.value)"> Attribute A3 = Attribute A1 + 4</label>
+        {% elif training_num == 3 %}
+             <label><input type="radio" name="answer" value="opt1" onchange="checkAnswer(this.value)">
+                A2 (Project 2) = A2 (Project 1) +3 <strong>/</strong> A2 (Project 3) = A2 (Project 2) +4 <strong>/</strong> A2 (Project 4) = A2 (Project 3) – 1 <strong>/</strong> A2 (Project 5) = A2 (Project 4) - 7</label><br>
+            <label><input type="radio" name="answer" value="opt2" onchange="checkAnswer(this.value)">
+                A2 (Project 2) = A2 (Project 1) + 2 <strong>/</strong> A2 (Project 3) = A2 (Project 2) + 5 <strong>/</strong> A2 (Project 4) = A2 (Project 3) - 1 <strong>/</strong> A2 (Project 5) = A2 (Project 4) - 7</label><br>
+            <label><input type="radio" name="answer" value="opt3" onchange="checkAnswer(this.value)">
+                A2 (Project 2) = A2 (Project 1) + 3 <strong>/</strong> A2 (Project 3) = A2 (Project 2) + 2 <strong>/</strong> A2 (Project 4) = A2 (Project 3) + 1 <strong>/</strong> A2 (Project 5) = A2 (Project 4) - 7</label>
+        {% endif %}
+    </form>
+
+    <p id="feedback" style="margin-top:15px; font-weight:bold;"></p>
+
+    <!-- Timer display -->
+    <p id="timer-msg" style="margin-top:15px; color: #555; font-style: italic;"></p>
+
+    <!-- Next button is hidden initially; revealed after 2 minutes -->
+    <div id="next-btn-wrapper" style="display:none;">
+        {{ next_button }}
+    </div>
+
+    <style>
+    button.reveal-btn { width: 70px; height: 30px; }
+    td.ev_revealed { min-width: 60px; }
+    </style>
+
+    <script>
+    let revealCost = 0;
+    let optionsData = {{ options|safe }};
+    const correctAnswer = "{{ correct_answer }}";
+
+    // ── Training page timer ──────────────────────────────────────────────────
+    // Constants (in seconds)
+    const SHOW_BUTTON_AFTER  = 1.5 * 60;   // 90 seconds → reveal Next button
+    const AUTO_ADVANCE_AFTER = 4 * 60;   // 4 minutes → auto-submit
+
+    const startTime = Date.now();
+    const timerMsg  = document.getElementById('timer-msg');
+    const nextWrap  = document.getElementById('next-btn-wrapper');
+
+    function formatRemaining(seconds) {
+        const m = Math.floor(seconds / 60);
+        const s = seconds % 60;
+        return m + ':' + String(s).padStart(2, '0');
+    }
+
+    function tickTimer() {
+        const elapsed = Math.floor((Date.now() - startTime) / 1000);
+        const remaining = AUTO_ADVANCE_AFTER - elapsed;
+
+        if (elapsed >= AUTO_ADVANCE_AFTER) {
+            // Auto-advance: click the hidden next button
+            timerMsg.textContent = 'Continuing automatically…';
+            const btn = nextWrap.querySelector('[type=submit], button');
+            if (btn) btn.click();
+            return; // stop ticking
+        }
+
+        if (elapsed >= SHOW_BUTTON_AFTER) {
+            // Show Next button
+            nextWrap.style.display = '';
+            timerMsg.textContent =
+                'You may continue now. This page will advance automatically in ' +
+                formatRemaining(remaining) + '.';
+        } else {
+            // Button still hidden
+            const waitLeft = SHOW_BUTTON_AFTER - elapsed;
+            timerMsg.textContent =
+                'Please read carefully. The "Next" button will appear in ' +
+                formatRemaining(waitLeft) + '.';
+        }
+
+        setTimeout(tickTimer, 1000);
+    }
+
+    tickTimer(); // start immediately
+    // ────────────────────────────────────────────────────────────────────────
+
+    // Initialise ev revealed and revealed fields'
+    optionsData.forEach(opt => {
+        opt.revealed = [0, 0, 0, 0];
+        opt.ev_revealed = 0;
+    });
+
+    function reveal(btn, value, weight, optionIndex, fieldIndex) {
+        btn.innerHTML = value;
+        btn.disabled = true;
+
+        optionsData[optionIndex].revealed[fieldIndex] = 1;
+
+        // calculate EV dynamically
+        let ev = 0;
+        for (let i = 0; i < 4; i++) {
+            if (optionsData[optionIndex].revealed[i] === 1) {
+                 ev += optionsData[optionIndex].fields[i] *
+                       (optionsData[optionIndex].ev_weights[i]);
+            }
+        }
+        optionsData[optionIndex].ev_revealed = ev;
+
+        let row = btn.parentElement.parentElement;
+        row.querySelector(".ev_revealed").innerHTML = ev.toFixed(2);
+    }
+
+    function checkAnswer(selectedValue) {
+        const feedback = document.getElementById("feedback");
+
+        if (selectedValue === correctAnswer) {
+            feedback.innerHTML = "✅ Correct! This is the correct insight for Training " + {{ training_num }} + ".";
+            feedback.style.color = "darkgreen";
+        } else {
+            feedback.innerHTML = "❌ Incorrect. Try revealing more attributes to find the correct answer.";
+            feedback.style.color = "darkred";
+        }
+    }
+    </script>
+
+{% endblock %}

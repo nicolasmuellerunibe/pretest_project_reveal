@@ -1,0 +1,66 @@
+{% block title %}
+    <h3> Quiz about the instructions </h3>
+{% endblock %}
+
+{% block content %}
+<br>
+
+<b>15. Employees can revisit the training insights in later periods, but this incurs a cost of 100 points every time they revisit a training insight.</b>
+<p id="feedback"></p>
+
+<!-- Quiz options -->
+<input type="radio" name="question15" value="1">
+True<br>
+
+<input type="radio" name="question15" value="2">
+False<br>
+
+<br><br>
+
+<!-- Next button initially disabled -->
+<button id="submit-btn" type="button" class="btn btn-primary" onclick="submitAnswer()">
+    Submit
+</button>
+
+<button id="next-btn" type="button" class="btn btn-primary" style="display:none;" onclick="document.querySelector('form').submit()">
+    Next
+</button>
+
+<!-- JavaScript for immediate feedback and enabling Next -->
+<script>
+    function submitAnswer() {
+        const radios = document.querySelectorAll('input[name="question15"]');
+        let selectedValue = null;
+        radios.forEach(r => { if (r.checked) selectedValue = parseInt(r.value); });
+
+        if (selectedValue === null) {
+            document.getElementById('feedback').innerHTML =
+                '⚠️ Please select an answer before submitting.';
+            document.getElementById('feedback').style.color = 'darkorange';
+            return;
+        }
+
+        // disable submit, show feedback
+        document.getElementById('submit-btn').disabled = true;
+        checkAnswer(selectedValue);
+    }
+
+    function checkAnswer(selectedValue) {
+        const feedback = document.getElementById("feedback");
+        const nextBtn = document.getElementById("next-btn");
+
+        if (selectedValue === 1) {
+            feedback.innerHTML = "✅ Correct! Revisiting training insights is possible but costs 100 points per revisit.";
+            feedback.style.color = "darkgreen";
+            nextBtn.style.display = "";   // Show Next
+            document.getElementById('submit-btn').style.display = 'none'; // Hide Submit
+        } else {
+            feedback.innerHTML = "❌ Incorrect. Revisiting training insights is possible but costs 100 points per revisit.";
+            feedback.style.color = "darkred";
+            nextBtn.style.display = 'none';  // Keep Next hidden
+            document.getElementById('submit-btn').disabled = false; // allow re-submit
+        }
+    }
+</script>
+
+{% endblock %}

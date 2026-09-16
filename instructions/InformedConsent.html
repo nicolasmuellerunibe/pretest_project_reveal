@@ -1,0 +1,23 @@
+{% extends "global/Page.html" %}
+{% load otree static %}
+
+{% block title %}
+    Informed consent
+{% endblock %}
+
+{% block content %}
+    <ul>
+    <li>I understand what is expected of me during this study and know that further instructions will follow.</li>
+    <li>I know that there is a compensation associated with my participation in the study: I will receive a compensation if I complete this study.</li>
+    <li>I understand that my participation in this study is voluntary. I have the right to stop my participation at any time. I do not have to give a reason for this and this will not have any adverse consequences for me.<br> For the further processing of the collected data, the public interest is the legal basis according to the AVG / GDPR. Termination of participation in the study therefore means that the previously collected data can still be legally involved in the study.</li>
+    <li>The results of this research can be used for scientific purposes and may be published. My name will not be published and the confidentiality of the data is guaranteed at every stage of the investigation.</li>
+    <li>For questions, I know I can contact: <a href="mailto: abts@ese.eur.nl">Marte Abts</a></li>
+    </ul>
+
+<br>
+<p style="color:#ff0000">
+    <b>I have read and understood the above information regarding this study. <br>Choose 'I agree' to continue with the study.</b>
+{% formfield player.informedconsent %}
+
+{{ next_button }}
+{% endblock %}

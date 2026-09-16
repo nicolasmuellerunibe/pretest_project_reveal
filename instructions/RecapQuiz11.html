@@ -1,0 +1,66 @@
+{% block title %}
+    <h3> Quiz about the instructions </h3>
+{% endblock %}
+
+{% block content %}
+<br>
+
+<b>11. Employees are paid based on Performance. The Performance in a round corresponds to the Realized Project Value less Total Reveal Costs and less Total Revisit Costs.</b>
+<p id="feedback"></p>
+
+<!-- Quiz options -->
+<input type="radio" name="question11" value="1">
+True<br>
+
+<input type="radio" name="question11" value="2">
+False<br>
+
+<br><br>
+
+<!-- Next button initially disabled -->
+<button id="submit-btn" type="button" class="btn btn-primary" onclick="submitAnswer()">
+    Submit
+</button>
+
+<button id="next-btn" type="button" class="btn btn-primary" style="display:none;" onclick="document.querySelector('form').submit()">
+    Next
+</button>
+
+<!-- JavaScript for immediate feedback and enabling Next -->
+<script>
+    function submitAnswer() {
+        const radios = document.querySelectorAll('input[name="question11"]');
+        let selectedValue = null;
+        radios.forEach(r => { if (r.checked) selectedValue = parseInt(r.value); });
+
+        if (selectedValue === null) {
+            document.getElementById('feedback').innerHTML =
+                '⚠️ Please select an answer before submitting.';
+            document.getElementById('feedback').style.color = 'darkorange';
+            return;
+        }
+
+        // disable submit, show feedback
+        document.getElementById('submit-btn').disabled = true;
+        checkAnswer(selectedValue);
+    }
+
+    function checkAnswer(selectedValue) {
+        const feedback = document.getElementById("feedback");
+        const nextBtn = document.getElementById("next-btn");
+
+        if (selectedValue === 1) {
+            feedback.innerHTML = "✅ Correct! Performance determines employee's compensation and consists of Realized Project Value - Total Reveal Cost - Total Revisit Cost.";
+            feedback.style.color = "darkgreen";
+            nextBtn.style.display = "";   // Show Next
+            document.getElementById('submit-btn').style.display = 'none'; // Hide Submit
+        } else {
+            feedback.innerHTML = "❌ Incorrect. Performance determines employee's compensation and consists of Realized Project Value - Total Reveal Cost - Total Revisit Cost.";
+            feedback.style.color = "darkred";
+            nextBtn.style.display = 'none';  // Keep Next hidden
+            document.getElementById('submit-btn').disabled = false; // allow re-submit
+        }
+    }
+</script>
+
+{% endblock %}

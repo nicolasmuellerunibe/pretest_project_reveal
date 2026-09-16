@@ -1,0 +1,22 @@
+<h3>Employee's Task (3)</h3>
+<body><br>
+
+<h4>Revealing Attribute Values</h4>
+
+Employees can choose to reveal <i>Attribute Values</i> for a project. Revealing <i>Attribute Values</i> for a project will allow employees to get a better idea of the <i>Expected Project Value</i> of a project.
+<br><br>
+Specifically, every time an employee reveals an <i>Attribute Value</i> for a project, the <i>EV Revealed </i> will be updated by this <i>Attribute Value</i> multiplied by its <i>Attribute Weight</i> (that means, contingent on which <i>Attribute Value</i> is revealed, the <i>Expected Project Value</i> is updated by either <i>Weight<sub>A1</sub> * A1 or Weight<sub>A2</sub> * A2 or Weight<sub>A3</sub> * A3 or Weight<sub>A4</sub> * A4</i>).
+<br><br>
+That means: The <i>EV Revealed</i> represents the part of the <i>Expected Project Value</i> that is already revealed. The more <i>Attribute Values</i> of a project are revealed, the closer the <i>EV Revealed</i> will be to the <i>Expected Project Value</i> of this project. For example, if all <i>Attribute Values</i> of a project are revealed, the <i>EV Revealed</i> would exactly equal the <i>Expected Project Value</i>.
+<br><br>
+
+<h4>Example</h4>
+Imagine that an employee wants to reveal the <i>Attribute Value</i> A2 for Project 3. They can do so by clicking on “Reveal” for A2 of Project 3. Recall that “EV Revealed” captures the <i>Expected Project Value</i> based on the revealed <i>Attribute Values</i> so far.
+<br><br>
+
+<img
+    src="{% static 'example/click11_red.JPG' %}"
+    style="border: 2px solid black; max-width: 100%; width: 600px; height: auto;"
+/>
+<br> <br>
+</body>

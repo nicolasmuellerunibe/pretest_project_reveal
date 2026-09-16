@@ -1,0 +1,232 @@
+body {
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    background-color: #fefefe;
+    color: #000000;
+    margin: 20px;
+    line-height: 1.5;
+}
+
+h3, h4, h5 {
+    color: #222;
+    margin-top: 20px;
+    font-weight: 600;
+}
+
+/* ------------------------------
+   Tables
+--------------------------------*/
+table {
+    border-collapse: collapse;
+    width: 100%;
+    margin-top: 15px;
+    background-color: #fff;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+    table-layout: fixed; /* fixed columns */
+    border-radius: 12px; /* rounded corner */
+    overflow: hidden;
+}
+
+th, td {
+    text-align: center;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    font-size: 15px;
+    word-wrap: break-word;
+}
+
+th {
+    background-color: #bfb4b4; /* dark Header */
+    font-weight: 600;
+}
+
+tr:nth-child(even) {
+    background-color: #e8e8e8; /* lighter cell */
+}
+
+tr:nth-child(odd) {
+    background-color: #ffffff; /* white cells */
+}
+
+/* ------------------------------
+   Buttons
+--------------------------------*/
+button {
+    cursor: pointer;
+    border-radius: 5px;
+    padding: 6px 12px;
+    font-size: 15px;
+    transition: all 0.2s ease;
+}
+
+/* Reveal-Buttons */
+.modal-reveal-btn {
+    background-color: #fefefe;
+    color: #000000;
+    border: 1px solid #000; /* black border */
+    opacity: 1 !important;
+}
+
+.modal-reveal-btn:hover:not(:disabled) {
+    background-color: #d6e4f5;
+    opacity: 1 !important;
+}
+
+/* Revealed Buttons */
+.modal-reveal-btn:disabled {
+    background-color: #e0e0e0; /* light BG */
+    color: #000000; /* dark text */
+    cursor: default;
+    border: 1px solid #000;
+    opacity: 1 !important;
+}
+
+/* Select Choice Button */
+#selectChoiceBtn {
+    background-color: #e8e8e8;
+    color: #000000;
+    border: 1px solid #000;
+}
+
+#selectChoiceBtn:hover:not(:disabled) {
+    background-color: #bfb4b4;
+}
+
+/* ------------------------------
+   Dropdown
+--------------------------------*/
+select {
+    padding: 6px 10px;
+    border-radius: 5px;
+    border: 1px solid #000;
+    font-size: 15px;
+    background-color: #f3f3f3;
+}
+
+/* ------------------------------
+   Modal
+--------------------------------*/
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    background-color: rgba(0,0,0,0.35);
+    padding: 20px;
+}
+
+.modal-content {
+    background-color: #fff;
+    margin: 50px auto;
+    padding: 20px 30px;
+    border-radius: 10px;
+    max-width: 900px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.close-btn {
+    color: #888;
+    float: right;
+    font-size: 26px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close-btn:hover {
+    color: #555;
+}
+
+/* ------------------------------
+   Feedback - Not used anywhere currently, but like that it's defined
+--------------------------------*/
+#modal-feedback,
+#feedback {
+    font-weight: 600;
+    margin-top: 15px;
+    font-size: 15px;
+}
+
+#modal-feedback.success,
+#feedback.success {
+    color: #4caf50;
+}
+
+#modal-feedback.error,
+#feedback.error {
+    color: #f28b82;
+}
+
+/* ------------------------------
+   Training Links
+--------------------------------*/
+#training_links a {
+    text-decoration: none;
+    color: #000000;
+    margin-right: 10px;
+    font-weight: 500;
+}
+
+#training_links a:hover {
+    text-decoration: underline;
+}
+
+/* ------------------------------
+   fix table width
+--------------------------------*/
+td.ev_revealed,
+td.modal-ev-revealed {
+    min-width: 60px;
+    font-weight: 600;
+}
+
+/* ------------------------------
+   font sizes
+--------------------------------*/
+p, li, select, button {
+    font-size: 15px;
+}
+
+h3 {
+    font-size: 28px;
+}
+
+h4 {
+    font-size: 20px;
+}
+
+h5 {
+    font-size: 20px;
+}
+
+/* Disabled Reveal-Buttons */
+button:disabled {
+    opacity: 1 !important;
+    filter: none !important;
+    cursor: default !important;
+    background-color: #f3f3f3 !important;
+    color: #000000 !important;
+    border: 1px solid #000000 !important;
+}
+
+/*  Reveal-Buttons  */
+button {
+    background-color: #f3f3f3;
+    color: #000000;
+    border: 1px solid #000000;
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-size: 14px;
+}
+
+/* Hover-effect */
+button:hover:not(:disabled) {
+    background-color: #a6a6a6;
+}
+
+/* table width */
+td {
+    min-width: 70px;
+}

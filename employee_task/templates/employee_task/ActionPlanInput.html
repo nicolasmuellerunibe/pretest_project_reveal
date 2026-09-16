@@ -1,0 +1,13 @@
+{% extends "global/Page.html" %}
+{% load otree static %}
+
+{% block content %}
+
+<h3>Action Planning</h3>
+
+
+{{ formfield 'action_plan_suggestions' }}
+
+{{ next_button }}
+
+{% endblock %}
